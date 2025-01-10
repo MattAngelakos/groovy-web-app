@@ -1,12 +1,10 @@
 import express from 'express';
 const router = express.Router();
-import { config } from 'dotenv';
-import Redis from "ioredis";
 import * as im from "imagemagick";
 import fs from "fs";
-config();
-const REDISURL = process.env.REDIS_URL;
-const client = new Redis(REDISURL);
+import { createClient } from 'redis';
+const client = createClient()
+client.connect().then(() => { });
 
 router
   .route('/api/redis')
@@ -35,14 +33,12 @@ router
       return res.status(400).json({ error: e });
     }
     const redisData = req.body;
-    const redisSet = JSON.stringify(redisData)
+    const redisSet = JSON.stringify(redisData);
     if (!redisData || Object.keys(redisData).length === 0) {
-      return res
-        .status(400)
-        .json({ error: 'There are no fields in the request body' });
+      return res.status(400).json({ error: 'There are no fields in the request body' });
     }
     try {
-      await client.setex(`${searchValue}:${searchTerm}`, 3600, redisSet);
+      await client.set(`${searchValue}:${searchTerm}`, redisSet, { EX: 3600 });
       return res.status(200).json(redisData);
     } catch (e) {
       console.log(e);
