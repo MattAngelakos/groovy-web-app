@@ -22,7 +22,7 @@ import {
 } from "@mui/material";
 const API_URL =
     process.env.NODE_ENV === "production"
-        ? "https://cs554-team10.vercel.app/api/redis"
+        ? "https://groovy-web-app.vercel.app/api/redis"
         : "/api/redis";
 
 export default function Selection() {
